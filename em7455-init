@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Maximum number of retries
+MAX_RETRIES=5
+RETRY_DELAY=10
+
+# Function to get the modem ID
+get_modem_id() {
+    mmcli -L | grep -oP '/org/freedesktop/ModemManager1/Modem/\K\d+'
+}
+
+# Function to check modem power state
+check_power_state() {
+    local modem_id=$1
+    mmcli -m "$modem_id" | grep -q "power state: low"
+    return $?
+}
+
+# Main loop
+retry_count=0
+while [ $retry_count -lt $MAX_RETRIES ]; do
+    # Get modem ID
+    MODEM_ID=$(get_modem_id)
+
+    if [ -z "$MODEM_ID" ]; then
+        echo "Modem not found. Retrying in $RETRY_DELAY seconds... ($((retry_count + 1))/$MAX_RETRIES)"
+        sleep $RETRY_DELAY
+        retry_count=$((retry_count + 1))
+        continue
+    fi
+
+    echo "Modem ID: $MODEM_ID"
+
+    # Check modem power state
+    if check_power_state "$MODEM_ID"; then
+        echo "Modem is in low power state. Activating..."
+
+        # Activate FCC authentication
+        sudo qmicli -d /dev/cdc-wdm0 --dms-set-fcc-authentication
+
+        # Restart ModemManager
+        sudo systemctl restart ModemManager
+
+        # Wait for ModemManager to restart
+        sleep 10
+    else
+        echo "Modem is already in the correct power state: on"
+        break
+    fi
+
+    # Reset retry counter after successfully finding the modem
+    retry_count=0
+done
+
+if [ $retry_count -eq $MAX_RETRIES ]; then
+    echo "Failed to find modem after $MAX_RETRIES attempts."
+    exit 1
+fi
+
+echo "Modem is ready."
