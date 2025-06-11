@@ -1,4 +1,4 @@
-# em7455-power-fix
+# Sierra Wireless EM7455
 
 A simple systemd-based solution to automatically initialize and activate the Sierra Wireless EM7455 LTE modem on Linux.  
 This fixes the issue where the modem stays in `low power state` after boot or resume from sleep, requiring manual FCC unlock and ModemManager restart.
