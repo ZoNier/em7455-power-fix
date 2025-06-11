@@ -1,0 +1,11 @@
+[Unit]
+Description=Activate Sierra EM7455 modem after resume
+After=suspend.target hibernate.target hybrid-sleep.target
+Requires=em7455-init.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/em7455-init
+
+[Install]
+WantedBy=sleep.target
