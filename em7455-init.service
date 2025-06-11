@@ -1,0 +1,12 @@
+[Unit]
+Description=Initialize Sierra EM7455 modem
+After=network.target ModemManager.service
+Requires=ModemManager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/em7455-init
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
