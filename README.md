@@ -4,39 +4,38 @@
 
 A systemd-based solution to initialize and activate the **Sierra Wireless EM7455 LTE modem** on Linux.
 
-This project exists to fix cases where the modem remains in **`low power state`** after boot or resume and requires **manual FCC unlock**, especially on systems where ModemManager does not handle it automatically.
+This project fixes cases where the modem remains in **`low power state`** after boot or resume and requires **manual FCC unlock**, especially on systems where ModemManager does not handle it automatically.
 
 ---
 
-## 🧠 Important Note — ModemManager ≥ 1.18.4 (FCC Unlock)
+## 🧠 Important Note — ModemManager ≥ 1.18.4
 
-Starting from **ModemManager 1.18.4**, the FCC unlock procedure is **built into ModemManager itself**.
+Starting from **ModemManager 1.18.4**, FCC unlock support is **built into ModemManager**.
 
-In most modern distributions **this script is NOT required anymore**.
+On most modern systems **this script is not required**.
 
-### ✅ What changed in ModemManager
+### What changed
 
 Since version **1.18.4**, ModemManager:
 
-* Includes **built-in FCC unlock scripts**
-* Supports **automatic FCC unlock** for supported modems (including Sierra Wireless)
-* Does **not enable FCC unlock by default**
-* Allows users or distributions to explicitly enable it
+* Includes built-in FCC unlock scripts
+* Supports automatic FCC unlock for supported modems
+* Does not enable FCC unlock by default
+* Allows users or distributions to enable it manually
 
 ---
 
-## 📌 Official ModemManager behavior
+## 📌 Official ModemManager Behavior
 
-According to the official documentation:
-
-* FCC unlock scripts are shipped in:
+FCC unlock scripts are shipped in:
 
 ```
 /usr/share/ModemManager/fcc-unlock.available.d/
 ```
 
-* They are **not enabled automatically**
-* Users may enable them manually via:
+They are **not enabled automatically**.
+
+To enable them manually:
 
 ```
 /etc/ModemManager/fcc-unlock.d/
@@ -44,15 +43,15 @@ According to the official documentation:
 
 ---
 
-## ✅ Recommended Solution (No Script Needed)
+## ✅ Recommended Solution (No Script Required)
 
 If your system uses:
 
-* **ModemManager ≥ 1.18.4**
-* **Sierra Wireless EM7455**
-* A standard Linux distribution (Debian / Ubuntu / Arch)
+* ModemManager ≥ 1.18.4
+* Sierra Wireless EM7455
+* A standard Linux distribution
 
-You can enable FCC unlock with:
+Enable FCC unlock with:
 
 ```bash
 sudo ln -s /usr/share/ModemManager/fcc-unlock.available.d/* \
@@ -65,9 +64,9 @@ Then restart ModemManager:
 sudo systemctl restart ModemManager
 ```
 
-✅ After this, **no custom scripts are required** — FCC unlock will be handled automatically.
+After that, **no custom scripts are required**.
 
-📖 Official documentation:
+📖 Documentation:
 [https://modemmanager.org/docs/modemmanager/fcc-unlock/](https://modemmanager.org/docs/modemmanager/fcc-unlock/)
 
 ---
@@ -76,33 +75,31 @@ sudo systemctl restart ModemManager
 
 This project is useful if:
 
-* You use **older ModemManager (< 1.18.4)**
-* FCC unlock scripts are **missing or disabled**
-* You run a **minimal or custom Linux system**
-* The modem **fails to unlock after suspend/resume**
-* You want **explicit control and logging**
-* You need a **reliable fallback solution**
-
-In these cases, this script provides a robust workaround.
+* You use ModemManager < 1.18.4
+* FCC unlock scripts are missing or disabled
+* You run a minimal or custom Linux system
+* The modem fails to unlock after suspend/resume
+* You want explicit control or logging
+* You need a reliable fallback solution
 
 ---
 
 # 🚀 Sierra Wireless EM7455 Init Script
 
-A systemd-based solution to automatically initialize and activate the Sierra Wireless EM7455 LTE modem.
+A systemd-based solution to automatically initialize and activate the EM7455 modem.
 
-This fixes the issue where the modem remains in `low power state` after boot or resume and requires manual FCC unlock.
+It ensures the modem exits `low power state` and becomes usable after boot or resume.
 
 ---
 
 ## ✅ Features
 
-* Detects EM7455 modem using `mmcli`
-* Automatically applies FCC authentication via `qmicli`
+* Detects EM7455 using `mmcli`
+* Applies FCC unlock via `qmicli`
 * Works on boot and resume
 * Handles delayed modem initialization
 * Includes retry logic
-* Works even when ModemManager fails to unlock FCC
+* Works even if ModemManager fails to unlock FCC
 
 ---
 
@@ -141,34 +138,30 @@ sudo systemctl enable --now em7455-init.service
 sudo systemctl enable --now em7455-resume.service
 ```
 
-The resume service is triggered automatically after suspend/hibernate.
-
 ---
 
 ## 🧠 How It Works
 
-On boot or resume, the script:
-
 1. Waits for ModemManager to detect the modem
 2. Detects the modem control interface (`cdc-wdmX`)
 3. Checks modem power state
-4. Sends FCC unlock via `qmicli`
-5. Verifies the modem is operational
+4. Sends FCC unlock
+5. Verifies modem readiness
 
 ---
 
 ## 🛠 Dependencies
 
-* `ModemManager`
-* `mmcli`
-* `qmicli`
-* `systemd`
+* ModemManager
+* mmcli
+* qmicli
+* systemd
 
 ---
 
 ## 📦 License
 
-This project is licensed under the **MIT License**.
+MIT License
 
 ---
 
